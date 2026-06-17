@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}✏️ Edit Task — TodoApp{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto">
+
+    <!-- Back link -->
+    <a href="{% url 'home' %}" class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-indigo-600 transition mb-6">
+        <i class="fa-solid fa-arrow-left"></i> Back to tasks
+    </a>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">
+            <i class="fa-solid fa-pen-to-square text-indigo-500 mr-2"></i>Edit Task
+        </h1>
+
+        <form method="post" action="{% url 'edit_todo' todo.pk %}" class="space-y-5">
+            {% csrf_token %}
+
+            <!-- Title -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">
+                    <i class="fa-solid fa-tag mr-1 text-indigo-400"></i>Title <span class="text-red-400">*</span>
+                </label>
+                <input
+                    type="text"
+                    name="title"
+                    value="{{ todo.title }}"
+                    required
+                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
+                />
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">
+                    <i class="fa-regular fa-note-sticky mr-1 text-indigo-400"></i>Notes
+                </label>
+                <textarea
+                    name="description"
+                    rows="3"
+                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition resize-none"
+                    placeholder="Optional description…"
+                >{{ todo.description }}</textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Priority -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">
+                        <i class="fa-solid fa-flag mr-1 text-indigo-400"></i>Priority
+                    </label>
+                    <select name="priority"
+                        class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition bg-white">
+                        <option value="high"   {% if todo.priority == 'high' %}selected{% endif %}>🔴 High</option>
+                        <option value="medium" {% if todo.priority == 'medium' %}selected{% endif %}>🟡 Medium</option>
+                        <option value="low"    {% if todo.priority == 'low' %}selected{% endif %}>🟢 Low</option>
+                    </select>
+                </div>
+
+                <!-- Due date -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">
+                        <i class="fa-regular fa-calendar mr-1 text-indigo-400"></i>Due Date
+                    </label>
+                    <input
+                        type="date"
+                        name="due_date"
+                        value="{{ todo.due_date|date:'Y-m-d' }}"
+                        class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
+                    />
+                </div>
+            </div>
+
+            <!-- Status -->
+            <div class="flex items-center gap-3 bg-gray-50 rounded-xl px-4 py-3">
+                <input
+                    type="checkbox"
+                    name="completed"
+                    id="completed"
+                    class="w-4 h-4 accent-indigo-600"
+                    {% if todo.completed %}checked{% endif %}
+                    disabled
+                />
+                <label for="completed" class="text-sm text-gray-600">
+                    {% if todo.completed %}
+                    <i class="fa-solid fa-circle-check text-green-500 mr-1"></i>This task is <strong>completed</strong>
+                    — toggle it from the list view.
+                    {% else %}
+                    <i class="fa-regular fa-clock text-amber-500 mr-1"></i>This task is <strong>pending</strong>
+                    — toggle it from the list view.
+                    {% endif %}
+                </label>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex gap-3 pt-2">
+                <button type="submit"
+                    class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-xl text-sm font-semibold transition shadow-sm">
+                    <i class="fa-solid fa-floppy-disk mr-1"></i> Save Changes
+                </button>
+                <a href="{% url 'home' %}"
+                    class="flex-1 text-center border border-gray-200 hover:bg-gray-50 text-gray-600 py-2.5 rounded-xl text-sm font-medium transition">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Danger zone -->
+    <div class="mt-4 bg-red-50 border border-red-100 rounded-2xl p-5">
+        <h3 class="text-sm font-semibold text-red-700 mb-3">
+            <i class="fa-solid fa-triangle-exclamation mr-1"></i>Danger Zone
+        </h3>
+        <form method="post" action="{% url 'delete_todo' todo.pk %}">
+            {% csrf_token %}
+            <button type="submit"
+                onclick="return confirm('Permanently delete &quot;{{ todo.title }}&quot;?')"
+                class="w-full bg-white hover:bg-red-600 hover:text-white text-red-600 border border-red-200 py-2.5 rounded-xl text-sm font-semibold transition">
+                <i class="fa-solid fa-trash mr-1"></i> Delete this task
+            </button>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
